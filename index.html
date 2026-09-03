@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mud Puddle Dash</title>
+<title>Bamenda Road Dash</title>
 <style>
   * {
     margin: 0;
@@ -14,7 +15,7 @@
 
   body {
     min-height: 100vh;
-    background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 60%, #6b4423 60%, #6b4423 100%);
+    background: linear-gradient(180deg, #1a2b3c, #0d1620);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -24,90 +25,95 @@
 
   .header {
     text-align: center;
-    margin-bottom: 15px;
-    color: #3d2817;
+    margin-bottom: 12px;
+    color: #fff;
   }
 
   h1 {
-    font-size: 30px;
+    font-size: 28px;
     margin-bottom: 4px;
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+    color: #ffb703;
   }
 
   .subtitle {
     font-size: 14px;
-    color: #4a2e1a;
-    font-weight: 600;
-  }
-
-  .game-wrapper {
-    background: #2c1810;
-    padding: 12px;
-    border-radius: 16px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-  }
-
-  #gameCanvas {
-    display: block;
-    background: linear-gradient(180deg, #87CEEB 0%, #a3c9a8 70%, #8b7355 70%, #8b7355 100%);
-    border-radius: 10px;
-    touch-action: none;
-  }
-
-  .controls {
-    margin-top: 15px;
-    text-align: center;
-    color: #3d2817;
-    font-size: 13px;
-    font-weight: 600;
+    color: #b8c4d0;
   }
 
   .score-row {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    max-width: 600px;
-    color: #3d2817;
+    max-width: 400px;
+    color: #fff;
     font-weight: bold;
     font-size: 16px;
     margin-bottom: 8px;
     padding: 0 5px;
   }
 
+  .score-row span {
+    color: #ffb703;
+  }
+
+  .game-wrapper {
+    background: #14181f;
+    padding: 10px;
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    border: 2px solid #2a323d;
+  }
+
+  #gameCanvas {
+    display: block;
+    border-radius: 12px;
+    touch-action: none;
+  }
+
+  .controls {
+    margin-top: 12px;
+    text-align: center;
+    color: #b8c4d0;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
   #overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.6);
-    display: none;
+    background: rgba(0,0,0,0.75);
+    display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
   }
 
   .overlay-box {
-    background: #fff;
+    background: #1e2530;
     padding: 35px 40px;
     border-radius: 20px;
     text-align: center;
     max-width: 320px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 2px solid #ffb703;
   }
 
   .overlay-box h2 {
-    color: #6b4423;
+    color: #ffb703;
     margin-bottom: 10px;
     font-size: 26px;
   }
 
   .overlay-box p {
-    color: #555;
+    color: #ccc;
     margin-bottom: 20px;
     font-size: 15px;
+    line-height: 1.4;
   }
 
   .overlay-box button {
-    background: #ff9800;
-    color: white;
+    background: #ffb703;
+    color: #1a1a1a;
     border: none;
     padding: 12px 30px;
     border-radius: 12px;
@@ -118,209 +124,344 @@
   }
 
   .overlay-box button:hover {
-    background: #f57c00;
+    background: #ffa500;
+  }
+
+  .difficulty-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .diff-btn {
+    background: transparent;
+    border: 2px solid #444;
+    color: #ccc;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .diff-btn:hover {
+    border-color: #ffb703;
+    color: #ffb703;
+  }
+
+  .diff-btn.selected {
+    background: #ffb703;
+    border-color: #ffb703;
+    color: #1a1a1a;
+  }
+
+  .badge-diff {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 10px;
+    border-radius: 8px;
+    margin-left: 6px;
+    vertical-align: middle;
   }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>🚶 Mud Puddle Dash 🚧</h1>
-  <div class="subtitle">Bamenda roads are rough — jump those potholes and mud puddles!</div>
+  <h1>🚗 Bamenda Road Dash</h1>
+  <div class="subtitle">Dodge potholes, mud, goats, and oncoming traffic. Bad roads, good reflexes!</div>
 </div>
 
 <div class="score-row">
-  <div>Score: <span id="score">0</span></div>
+  <div>Distance: <span id="score">0</span>m <span id="diffBadge" class="badge-diff" style="background:#ffb703;color:#1a1a1a;">MEDIUM</span></div>
   <div>Best: <span id="best">0</span></div>
 </div>
 
 <div class="game-wrapper">
-  <canvas id="gameCanvas" width="600" height="300"></canvas>
+  <canvas id="gameCanvas" width="380" height="560"></canvas>
 </div>
 
-<div class="controls">Tap the game, click, or press SPACE to jump!</div>
+<div class="controls">Use ← → arrow keys, A/D, or drag to steer</div>
 
 <div id="overlay">
   <div class="overlay-box">
-    <h2>💦 Splash!</h2>
-    <p id="finalScore">You fell into a mud puddle.</p>
-    <button onclick="restartGame()">Try Again</button>
+    <h2 id="overlayTitle">🚧 Crashed!</h2>
+    <p id="finalScore">Ready to hit the road?</p>
+    <div class="difficulty-row" id="difficultyRow">
+      <button class="diff-btn" data-diff="easy" onclick="selectDifficulty('easy')">Easy</button>
+      <button class="diff-btn selected" data-diff="medium" onclick="selectDifficulty('medium')">Medium</button>
+      <button class="diff-btn" data-diff="hard" onclick="selectDifficulty('hard')">Hard</button>
+    </div>
+    <button onclick="startOrRestart()" id="mainBtn">Start Driving</button>
   </div>
 </div>
 
 <script>
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const W = canvas.width;
+const H = canvas.height;
 
-const groundY = 230;
-let gravity = 0.7;
-let gameSpeed = 5;
+const roadWidth = 280;
+const roadLeft = (W - roadWidth) / 2;
+const roadRight = roadLeft + roadWidth;
+const laneCount = 3;
+const laneWidth = roadWidth / laneCount;
+
+const DIFFICULTY_SETTINGS = {
+  easy:   { startSpeed: 3,   maxBonus: 4,  spawnBase: 70, spawnMin: 40, rampDivisor: 10, label: 'EASY' },
+  medium: { startSpeed: 4,   maxBonus: 6,  spawnBase: 55, spawnMin: 28, rampDivisor: 8,  label: 'MEDIUM' },
+  hard:   { startSpeed: 5.5, maxBonus: 9,  spawnBase: 42, spawnMin: 20, rampDivisor: 6,  label: 'HARD' }
+};
+let currentDifficulty = 'medium';
+let diffSettings = DIFFICULTY_SETTINGS.medium;
+
+function selectDifficulty(diff) {
+  currentDifficulty = diff;
+  diffSettings = DIFFICULTY_SETTINGS[diff];
+  document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.diff === diff);
+  });
+}
+
+let gameSpeed = 4;
 let score = 0;
-let best = 0;
-let isGameOver = false;
+let bestScores = { easy: 0, medium: 0, hard: 0 };
+let isGameOver = true;
 let isStarted = false;
+let frame = 0;
+let nextSpawnFrame = 40;
 
-const man = {
-  x: 60,
-  y: groundY - 40,
-  width: 28,
-  height: 40,
-  vy: 0,
-  isJumping: false
+const car = {
+  width: 42,
+  height: 70,
+  x: W/2 - 21,
+  y: H - 130,
+  targetLane: 1
 };
 
 let obstacles = [];
-let frame = 0;
-let nextObstacleFrame = 60;
 
-function drawBackground() {
-  // sky
-  ctx.fillStyle = '#87CEEB';
-  ctx.fillRect(0, 0, canvas.width, groundY);
-
-  // distant hills
-  ctx.fillStyle = '#7ba672';
-  ctx.beginPath();
-  ctx.arc(100, groundY, 60, Math.PI, 0);
-  ctx.arc(300, groundY, 80, Math.PI, 0);
-  ctx.arc(500, groundY, 50, Math.PI, 0);
-  ctx.fill();
-
-  // road (dirt)
-  ctx.fillStyle = '#8b7355';
-  ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
-
-  // road texture lines
-  ctx.strokeStyle = 'rgba(90,60,30,0.4)';
-  ctx.lineWidth = 2;
-  for (let i = 0; i < 8; i++) {
-    let lineX = (i * 90 - (frame * 2) % 90);
-    ctx.beginPath();
-    ctx.moveTo(lineX, groundY + 15);
-    ctx.lineTo(lineX + 30, groundY + 15);
-    ctx.stroke();
-  }
+function laneCenter(lane) {
+  return roadLeft + laneWidth * lane + laneWidth/2;
 }
 
-function drawMan() {
-  ctx.save();
-  ctx.translate(man.x, man.y);
+function resetCar() {
+  car.x = laneCenter(1) - car.width/2;
+  car.targetLane = 1;
+}
 
-  // head
-  ctx.fillStyle = '#3d2817';
+function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
-  ctx.arc(14, 8, 8, 0, Math.PI * 2);
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawRoad() {
+  ctx.fillStyle = '#3a5f3a';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = '#5c5449';
+  ctx.fillRect(roadLeft, 0, roadWidth, H);
+
+  ctx.fillStyle = 'rgba(80,65,50,0.35)';
+  for (let i = 0; i < 6; i++) {
+    let px = roadLeft + (i * 53 + frame) % roadWidth;
+    let py = (i * 130 + frame * 3) % H;
+    ctx.beginPath();
+    ctx.ellipse(px, py, 14, 6, 0, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([18, 16]);
+  for (let i = 1; i < laneCount; i++) {
+    let x = roadLeft + laneWidth * i;
+    ctx.beginPath();
+    ctx.moveTo(x, -((frame * gameSpeed) % 34));
+    ctx.lineTo(x, H);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = '#3d3830';
+  ctx.fillRect(roadLeft - 6, 0, 6, H);
+  ctx.fillRect(roadRight, 0, 6, H);
+}
+
+function drawCar() {
+  ctx.save();
+  ctx.translate(car.x, car.y);
+
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.ellipse(car.width/2, car.height + 4, car.width/2, 6, 0, 0, Math.PI*2);
   ctx.fill();
 
-  // body
-  ctx.fillStyle = '#1e5f8a';
-  ctx.fillRect(6, 16, 16, 18);
+  ctx.fillStyle = '#e63946';
+  roundRect(ctx, 0, 10, car.width, car.height - 15, 8);
+  ctx.fill();
 
-  // legs (simple running animation)
-  ctx.strokeStyle = '#2c1810';
-  ctx.lineWidth = 4;
-  let legOffset = man.isJumping ? 5 : Math.sin(frame * 0.5) * 6;
-  ctx.beginPath();
-  ctx.moveTo(9, 34);
-  ctx.lineTo(9 - legOffset, 42);
-  ctx.moveTo(19, 34);
-  ctx.lineTo(19 + legOffset, 42);
-  ctx.stroke();
+  ctx.fillStyle = '#a8dadc';
+  roundRect(ctx, 6, 16, car.width - 12, 18, 4);
+  ctx.fill();
+
+  ctx.fillStyle = '#ffe066';
+  ctx.fillRect(4, 4, 8, 6);
+  ctx.fillRect(car.width - 12, 4, 8, 6);
+
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(-3, 18, 6, 16);
+  ctx.fillRect(car.width - 3, 18, 6, 16);
+  ctx.fillRect(-3, car.height - 30, 6, 16);
+  ctx.fillRect(car.width - 3, car.height - 30, 6, 16);
 
   ctx.restore();
 }
 
+const obstacleTypes = ['puddle', 'pothole', 'goat', 'rock', 'car'];
+
 function spawnObstacle() {
-  const isPuddle = Math.random() > 0.4;
-  const width = isPuddle ? 50 + Math.random() * 30 : 26;
+  const lane = Math.floor(Math.random() * laneCount);
+  const type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
+  let w = 40, h = 30;
+  if (type === 'car') { w = 40; h = 65; }
+  if (type === 'goat') { w = 34; h = 26; }
+  if (type === 'puddle') { w = 55; h = 22; }
+  if (type === 'pothole') { w = 36; h = 20; }
+  if (type === 'rock') { w = 28; h = 24; }
+
   obstacles.push({
-    x: canvas.width,
-    width: width,
-    height: isPuddle ? 10 : 30,
-    type: isPuddle ? 'puddle' : 'pothole',
-    y: isPuddle ? groundY - 5 : groundY - 5
+    lane,
+    x: laneCenter(lane) - w/2,
+    y: -h - 10,
+    width: w,
+    height: h,
+    type,
+    passed: false
   });
 }
 
-function drawObstacles() {
-  obstacles.forEach(o => {
-    if (o.type === 'puddle') {
-      ctx.fillStyle = '#4a3728';
-      ctx.beginPath();
-      ctx.ellipse(o.x + o.width/2, o.y + 5, o.width/2, 8, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = 'rgba(120,150,180,0.6)';
-      ctx.beginPath();
-      ctx.ellipse(o.x + o.width/2, o.y + 3, o.width/2 - 5, 5, 0, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      ctx.fillStyle = '#1a1210';
-      ctx.beginPath();
-      ctx.ellipse(o.x + o.width/2, o.y + 5, o.width/2, 8, 0, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  });
-}
+function drawObstacle(o) {
+  ctx.save();
+  ctx.translate(o.x, o.y);
 
-function checkCollision() {
-  for (let o of obstacles) {
-    const manBottom = man.y + man.height;
-    const manLeft = man.x;
-    const manRight = man.x + man.width;
-
-    const obLeft = o.x;
-    const obRight = o.x + o.width;
-
-    const overlapX = manRight > obLeft + 8 && manLeft < obRight - 8;
-    const overlapY = manBottom > o.y - 5;
-
-    if (overlapX && overlapY) {
-      return true;
-    }
+  if (o.type === 'puddle') {
+    ctx.fillStyle = '#3d2e22';
+    ctx.beginPath();
+    ctx.ellipse(o.width/2, o.height/2, o.width/2, o.height/2, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(140,170,200,0.6)';
+    ctx.beginPath();
+    ctx.ellipse(o.width/2, o.height/2 - 3, o.width/2 - 8, o.height/2 - 6, 0, 0, Math.PI*2);
+    ctx.fill();
+  } else if (o.type === 'pothole') {
+    ctx.fillStyle = '#161616';
+    ctx.beginPath();
+    ctx.ellipse(o.width/2, o.height/2, o.width/2, o.height/2, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = '#3d3d3d';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  } else if (o.type === 'rock') {
+    ctx.fillStyle = '#7d7d7d';
+    ctx.beginPath();
+    ctx.moveTo(4, o.height);
+    ctx.lineTo(0, o.height/2);
+    ctx.lineTo(o.width/2, 0);
+    ctx.lineTo(o.width, o.height/3);
+    ctx.lineTo(o.width - 4, o.height);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#9d9d9d';
+    ctx.beginPath();
+    ctx.moveTo(o.width/2, 0);
+    ctx.lineTo(o.width - 4, o.height);
+    ctx.lineTo(o.width/2 + 6, o.height - 5);
+    ctx.closePath();
+    ctx.fill();
+  } else if (o.type === 'goat') {
+    ctx.fillStyle = '#f1e4c9';
+    roundRect(ctx, 4, 10, o.width - 8, o.height - 12, 8);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(o.width - 6, 8, 8, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#3d3020';
+    ctx.fillRect(6, o.height - 6, 4, 8);
+    ctx.fillRect(o.width - 12, o.height - 6, 4, 8);
+    ctx.fillRect(o.width - 4, 1, 2, 5);
+  } else if (o.type === 'car') {
+    ctx.fillStyle = '#2a6f97';
+    roundRect(ctx, 0, 6, o.width, o.height - 10, 7);
+    ctx.fill();
+    ctx.fillStyle = '#a8dadc';
+    roundRect(ctx, 5, o.height - 28, o.width - 10, 16, 4);
+    ctx.fill();
+    ctx.fillStyle = '#ffe066';
+    ctx.fillRect(4, o.height - 8, 8, 5);
+    ctx.fillRect(o.width - 12, o.height - 8, 8, 5);
   }
-  return false;
+
+  ctx.restore();
+}
+
+function checkCollision(o) {
+  const carLeft = car.x + 6;
+  const carRight = car.x + car.width - 6;
+  const carTop = car.y + 8;
+  const carBottom = car.y + car.height - 5;
+
+  const obLeft = o.x + 4;
+  const obRight = o.x + o.width - 4;
+  const obTop = o.y + 4;
+  const obBottom = o.y + o.height - 4;
+
+  return carLeft < obRight && carRight > obLeft && carTop < obBottom && carBottom > obTop;
 }
 
 function update() {
   if (!isStarted || isGameOver) return;
-
   frame++;
 
-  // physics
-  man.vy += gravity;
-  man.y += man.vy;
+  const targetX = laneCenter(car.targetLane) - car.width/2;
+  car.x += (targetX - car.x) * 0.25;
 
-  if (man.y >= groundY - man.height) {
-    man.y = groundY - man.height;
-    man.vy = 0;
-    man.isJumping = false;
-  }
+  obstacles.forEach(o => o.y += gameSpeed);
+  obstacles = obstacles.filter(o => o.y < H + 50);
 
-  // obstacles
-  obstacles.forEach(o => o.x -= gameSpeed);
-  obstacles = obstacles.filter(o => o.x + o.width > 0);
-
-  if (frame >= nextObstacleFrame) {
+  if (frame >= nextSpawnFrame) {
     spawnObstacle();
-    nextObstacleFrame = frame + 55 + Math.random() * 40;
+    nextSpawnFrame = frame + Math.max(diffSettings.spawnMin, diffSettings.spawnBase - Math.floor(score/8));
   }
 
-  // speed increases with score
-  gameSpeed = 5 + Math.floor(score / 10) * 0.5;
+  gameSpeed = diffSettings.startSpeed + Math.min(score / 25, diffSettings.maxBonus);
 
-  if (checkCollision()) {
-    endGame();
-    return;
+  for (let o of obstacles) {
+    if (!o.passed && o.y > car.y) {
+      o.passed = true;
+      score++;
+      document.getElementById('score').textContent = score;
+    }
+    if (checkCollision(o)) {
+      endGame(o.type);
+      return;
+    }
   }
-
-  score++;
-  document.getElementById('score').textContent = Math.floor(score / 5);
 }
 
 function draw() {
-  drawBackground();
-  drawObstacles();
-  drawMan();
+  drawRoad();
+  obstacles.forEach(drawObstacle);
+  drawCar();
 }
 
 function gameLoop() {
@@ -331,65 +472,75 @@ function gameLoop() {
   }
 }
 
-function jump() {
-  if (!isStarted) {
-    isStarted = true;
-    gameLoop();
-    return;
-  }
-  if (!man.isJumping && !isGameOver) {
-    man.vy = -13;
-    man.isJumping = true;
-  }
+function moveLeft() {
+  if (car.targetLane > 0) car.targetLane--;
+}
+function moveRight() {
+  if (car.targetLane < laneCount - 1) car.targetLane++;
 }
 
-function endGame() {
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'ArrowLeft' || e.code === 'KeyA') moveLeft();
+  if (e.code === 'ArrowRight' || e.code === 'KeyD') moveRight();
+});
+
+let touchStartX = null;
+canvas.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX;
+});
+canvas.addEventListener('touchend', (e) => {
+  if (touchStartX === null) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (dx > 30) moveRight();
+  else if (dx < -30) moveLeft();
+  touchStartX = null;
+});
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  if (clickX < W/2) moveLeft(); else moveRight();
+});
+
+const crashMessages = {
+  puddle: "Splashed straight into a mud puddle! 💦",
+  pothole: "Wheel got swallowed by a pothole! 🕳️",
+  goat: "A goat wandered into the road... and you found it. 🐐",
+  rock: "Crashed into a rock on the road! 🪨",
+  car: "Collided with oncoming traffic! 🚗"
+};
+
+function endGame(type) {
   isGameOver = true;
-  const finalScore = Math.floor(score / 5);
-  if (finalScore > best) {
-    best = finalScore;
-    document.getElementById('best').textContent = best;
+  if (score > bestScores[currentDifficulty]) {
+    bestScores[currentDifficulty] = score;
   }
-  document.getElementById('finalScore').textContent = `You scored ${finalScore}! The road got you this time.`;
+  document.getElementById('best').textContent = bestScores[currentDifficulty];
+  document.getElementById('overlayTitle').textContent = '🚧 Crashed!';
+  document.getElementById('finalScore').textContent =
+    (crashMessages[type] || "You crashed!") + ` You made it ${score}m on ${diffSettings.label} mode.`;
+  document.getElementById('mainBtn').textContent = 'Try Again';
+  document.getElementById('difficultyRow').style.display = 'flex';
   document.getElementById('overlay').style.display = 'flex';
 }
 
-function restartGame() {
+function startOrRestart() {
   obstacles = [];
   frame = 0;
   score = 0;
-  gameSpeed = 5;
-  man.y = groundY - man.height;
-  man.vy = 0;
-  man.isJumping = false;
+  gameSpeed = diffSettings.startSpeed;
+  nextSpawnFrame = diffSettings.spawnBase;
+  resetCar();
   isGameOver = false;
   isStarted = true;
-  nextObstacleFrame = 60;
   document.getElementById('score').textContent = '0';
+  document.getElementById('best').textContent = bestScores[currentDifficulty];
+  document.getElementById('diffBadge').textContent = diffSettings.label;
   document.getElementById('overlay').style.display = 'none';
   gameLoop();
 }
 
-// controls
-document.addEventListener('keydown', (e) => {
-  if (e.code === 'Space') {
-    e.preventDefault();
-    jump();
-  }
-});
-canvas.addEventListener('click', jump);
-canvas.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-  jump();
-});
-
-// initial draw
+resetCar();
 draw();
-ctx.fillStyle = 'rgba(0,0,0,0.5)';
-ctx.font = 'bold 20px Arial';
-ctx.textAlign = 'center';
-ctx.fillStyle = '#fff';
-ctx.fillText('Click or press SPACE to start!', canvas.width/2, canvas.height/2);
 </script>
 
 </body>
